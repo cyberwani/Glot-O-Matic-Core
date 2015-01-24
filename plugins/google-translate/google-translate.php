@@ -11,8 +11,8 @@ class GP_Google_Translate extends GP_Plugin {
 	public function __construct() {
 		$this->key = gp_const_get('GP_GOOGLE_TRANSLATE_KEY');
 
-		if ( ! $this->key ) {
-			return;
+		if( ! gp_const_get('GP_GOOGLE_TRANSLATE') && ! $this->key ) { 
+			return; 
 		}
 
 		parent::__construct();
@@ -21,6 +21,19 @@ class GP_Google_Translate extends GP_Plugin {
 	}
 
 	public function load_script( $template, $args ) {
+		if (GP::$user->logged_in()) {
+			$user_obj = GP::$user->current();
+			
+			$user = strtoupper($user_obj->user_login);
+
+			$user_key = gp_const_get('GP_GOOGLE_TRANSLATE_KEY_'.$user);
+			if( $user_key ) { $this->key = $user_key; }
+		}
+
+		if( ! $this->key ) {
+			return;
+		}
+		
 		if ( 'translations' != $template ) {
 			return;
 		}

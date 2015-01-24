@@ -15,8 +15,8 @@ wp_enqueue_script( 'jquery' );
 		<div class="gp-content">
 	    <div id="gp-js-message"></div>
 		<h1>
-			<a class="logo" href="<?php echo gp_url( '/' ); ?>" rel="home">
-				<img alt="GlotPress" src="<?php echo gp_url_img( 'glotpress-logo.png' ); ?>" />
+			<a class="logo" href="<?php echo apply_filters( 'gp_logo_url', gp_url( '/' ) ); ?>" rel="home">
+				<img alt="GlotPress" src="<?php echo apply_filters( 'gp_logo_img_url', gp_url_img( 'glotpress-logo.png' ) ); ?>" />
 			</a>
 			<?php echo gp_breadcrumb(); ?>
 			<span id="hello">
@@ -25,11 +25,13 @@ wp_enqueue_script( 'jquery' );
 				$user = GP::$user->current();
 
 				printf( __('Hi, %s.'), '<a href="'.gp_url( '/profile' ).'">'.$user->user_login.'</a>' );
+				$logout_string = '<a href="' . gp_url('/logout') . '">' . __('Log out') . '</a>';
+				echo apply_filters( 'gp_logout_link', $logout_string );
 				?>
-				<a href="<?php echo gp_url('/logout')?>"><?php _e('Log out'); ?></a>
-			<?php elseif( ! GP_INSTALLING ): ?>
-				<strong><a href="<?php echo gp_url_login(); ?>"><?php _e('Log in'); ?></a></strong>
-			<?php endif; ?>
+			<?php elseif( ! GP_INSTALLING ): 
+				$login_string = '<strong><a href="' . gp_url_login() . '">' . __('Log in') . '</a></strong>';
+				echo apply_filters( 'gp_login_link', $login_string );
+			endif; ?>
 			<?php do_action( 'after_hello' ); ?>
 			</span>
 			<div class="clearfix"></div>

@@ -2,7 +2,7 @@
 /**
  * Class for working with PO files
  *
- * @version $Id$
+ * @version $Id: po.php 1014 2015-01-23 12:49:27Z ocean90 $
  * @package pomo
  * @subpackage po
  */
@@ -194,7 +194,7 @@ class PO extends Gettext_Translations {
 	 * 	false if the entry is empty
 	 */
 	public static function export_entry(&$entry) {
-		if (!$entry->singular) return false;
+		if ( null === $entry->singular || '' === $entry->singular ) return false;
 		$po = array();
 		if (!empty($entry->translator_comments)) $po[] = PO::comment_block($entry->translator_comments);
 		if (!empty($entry->extracted_comments)) $po[] = PO::comment_block($entry->extracted_comments, '.');

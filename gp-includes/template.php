@@ -89,6 +89,8 @@ function gp_breadcrumb( $breadcrumb = null, $args = array() ) {
 	);
 	$args = array_merge( $defaults, $args );
 
+	$breadcrumb = apply_filters( 'gp_pre_breadcrumb', $breadcrumb );
+	
 	if ( ! is_null( $breadcrumb ) ) {
 		$breadcrumb        = gp_array_flatten( $breadcrumb );
 		$breadcrumb_string = implode( $args['separator'], array_filter( $breadcrumb ) );

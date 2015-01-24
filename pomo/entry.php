@@ -2,7 +2,7 @@
 /**
  * Contains Translation_Entry class
  *
- * @version $Id$
+ * @version $Id: entry.php 1013 2015-01-23 12:29:52Z ocean90 $
  * @package pomo
  * @subpackage entry
  */
@@ -61,7 +61,7 @@ class Translation_Entry {
 	 * @return string|bool the key or false if the entry is empty
 	 */
 	function key() {
-		if (!$this->singular) return false;
+		if ( null === $this->singular || '' === $this->singular ) return false;
 		// prepend context and EOT, like in MO files
 		return !$this->context? $this->singular : $this->context.chr(4).$this->singular;
 	}
