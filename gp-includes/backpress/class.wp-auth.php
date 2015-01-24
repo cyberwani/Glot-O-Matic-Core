@@ -210,11 +210,11 @@ class WP_Auth
 		
 		$auth_args['pass_frag'] = $pass_frag;
 
-		$key_string = apply_filters( 'gp_user_auth_key_string', $username . $pass_frag . '|' . $expiration, $auth_args );
+		$key_string = apply_filters( 'gp_user_auth_key_string', $auth_args['username'] . $auth_args['pass_frag'] . '|' . $auth_args['expiration'], $auth_args );
 		$key  = call_user_func( backpress_get_option( 'hash_function_name' ), $key_string, $scheme );
 
 		$hash_function = apply_filters( 'gp_user_auth_hash_function', 'md5', $auth_args );
-		$hash_string = apply_filters( 'gp_user_auth_hash_string', $username . '|' . $expiration, $auth_args );
+		$hash_string = apply_filters( 'gp_user_auth_hash_string', $auth_args['username'] . '|' . $auth_args['expiration'], $auth_args );
 		$hash = hash_hmac( $hash_function, $hash_string, $key );
 
 		if ( $auth_args['hmac'] != $hash ) {
