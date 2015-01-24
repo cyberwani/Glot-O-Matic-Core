@@ -1,3 +1,42 @@
+This is a fork of GlotPress, focusing on integration with a WordPress install.
+
+There are three new plugins included in this version:
+
+	- remove-projects-from-breadcrums
+	- use-slug-for-downloads
+	- wordpress-single-sign-on
+	
+as well as an update to the google-translate plugin.
+
+New Plugin: remove-projects-from-breadcrums
+-------------------------------------------
+	This plugin is allows you to remove the "Projects" item from the breadcrumbs at the top of a GlotPress site, useful if you have only one project to host.  See the readme for more details in the plugin directory.
+	
+	This plugin requires the version of GlotPress contained in this repository, the official GlotPress distribution will not work as there are several filters that are required but do not exist in it.
+	
+New Plugin: use-slug-for-downloads
+----------------------------------
+	This plugin is allows you to use the slug as the default filename when exporting a translation set.  See the readme for more details in the plugin directory.
+	
+	This plugin requires the version of GlotPress contained in this repository, the official GlotPress distribution will not work as there are several filters that are required but do not exist in it.
+
+New Plugin: wordpress-single-sign-on
+------------------------------------
+	This plugin is allows you to use the WordPress cookies, giving you a single sign on to WordPress and GlotPress at the same time.  See the readme for more details in the plugin directory.
+
+	This plugin requires the version of GlotPress contained in this repository, the official GlotPress distribution will not work as there are several filters that are required but do not exist in it.
+	
+Updated Plugin: google-translate
+--------------------------------
+	The Google translate plugin has been updated, you can now assign a Google API key to individual users and a readme has been added with details on the configuraiton of the plugin.
+	
+	This plugin will work with the official GlotPress distribution.
+
+
+********************************************************************************	
+* What follows is the original README contained in the GlotPress distribution. *
+********************************************************************************	
+
 LATEST NEWS AND INFORMATION
 
 http://glotpress.org/
