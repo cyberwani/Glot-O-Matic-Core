@@ -9,7 +9,6 @@ body, html,
 }
 body, html {
 	margin: 0 0.5em;
-	background: none repeat scroll 0% 0% #F1F1F1;
 }
 .gp-content input,
 .gp-content textarea {
