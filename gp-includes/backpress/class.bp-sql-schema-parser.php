@@ -102,7 +102,37 @@ class BP_SQL_Schema_Parser
 		// Tidy up the table columns/indices
 		$_columns_indices = trim( $_matches[3], " \t\n\r\0\x0B," );
 		// Split by commas not followed by a closing parenthesis ")", using fancy lookaheads
-		$_columns_indices = preg_split( '@,(?!(?:[^\(]+\)))$@ms', $_columns_indices );
+		// Note, previously the regex was: '@,(?!(?:[^\(]+\)))$@ms'
+		// but this matches too little as the $ forces the split to only happen if the comma's 
+		// are at the end of the line, removing it splits the columns better.
+		// $_columns_indices = preg_split( '@,(?!(?:[^\(]+\)))@ms', $_columns_indices );
+		// However even this does not work as it doesn't handle multi-nested brackets, for example:
+		// 		KEY `singular_plural_context` (`singular`(83), `plural`(83), `context`(83))
+		// Instead walk the string character by character and pay attention to when we open and close 
+		// brackets so we can split it correctly.
+		
+		$_inside_brace = 0;
+		$_current_index = 0;
+		$__columns_indicies = array();
+		$_col_len = strlen( $_columns_indices );
+
+		for( $_counter = 0; $_counter <= $_col_len; $_counter++ ) {
+			$_thischar = $_columns_indices[$_counter];
+			
+			if( $_thischar == '(' ) { $_inside_brace++; }
+			if( $_thischar == ')' ) { $_inside_brace--; }
+
+			if( $_thischar == ',' && $_inside_brace == 0) { 
+				$_current_index++; 
+			}
+			else {
+				$__columns_indicies[$_current_index] .= $_thischar;
+			}
+		}
+		
+		$_columns_indices = $__columns_indicies;
+		unset( $__columns_indicies );
+
 		$_columns_indices = array_map( 'trim', $_columns_indices );
 
 		// Tidy the table attributes
