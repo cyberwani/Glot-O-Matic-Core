@@ -47,10 +47,12 @@ Installation steps:
 		define('GP_SECURE_AUTH_COOKIE', 'wordpress_sec_auth_' . GP_WORDPRESS_HASH);
 		define('GP_LOGGED_IN_COOKIE', 'wordpress_logged_in_' . GP_WORDPRESS_HASH);
 
-	8) Finally, at this line to gp-config.php:
+	8) Finally, add these lines to gp-config.php:
 	
 		define( 'GP_WORDPRESS_SINGLE_SIGN_ON', true );
-		
+		define( 'AUTH_CLASS', 'WP_Auth_V2' );
+		define( 'AUTH_CLASS_FILE', './plugins/wordpress-single-sign-on/class.wp-auth.v2.php' );
+
 	9) Logon to your WordPress site and then to to your GlotPress URL, you should be logged in automatically!
 	
 Notes:

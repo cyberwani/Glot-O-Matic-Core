@@ -1,5 +1,5 @@
 <?php
-class WP_Auth
+class WP_Auth_V2
 {
 	var $db; // BBPDB object
 	var $users; // WP_Users object
@@ -8,7 +8,7 @@ class WP_Auth
 
 	var $current = 0;
 
-	function WP_Auth( &$db, &$users, $cookies )
+	function WP_Auth_V2( &$db, &$users, $cookies )
 	{
 		$this->__construct( $db, $users, $cookies );
 	}
@@ -157,46 +157,57 @@ class WP_Auth
 				}
 			}
 		}
-		
+
 		if ( !$cookie ) {
 			return false;
 		}
 
 		$cookie_elements = explode( '|', $cookie );
-		if ( count( $cookie_elements ) != 3 ) {
-			do_action( 'auth_cookie_malformed', $cookie, $scheme );
-			return false;
+		$element_count = count( $cookie_elements );
+
+		if ( $element_count != 4 ) {
+			if ( apply_filters( 'gp_auth_cookie_malformed', false, $element_count ) ) {
+				do_action( 'auth_cookie_malformed', $cookie, $scheme );
+				return false;
+			}
 		}
 
-		list( $username, $expiration, $hmac ) = $cookie_elements;
+		$auth_args = array();
+		$auth_args['username'] = $cookie_elements[0];
+		$auth_args['expiration'] = $cookie_elements[1];
+		$auth_args['token'] = $cookie_elements[2];
+		$auth_args['hmac'] = $cookie_elements[3];
 
-		$expired = $expiration;
+		$expired = $auth_args['expiration'];
 
 		// Allow a grace period for POST and AJAX requests
 		if ( defined( 'DOING_AJAX' ) || 'POST' == $_SERVER['REQUEST_METHOD'] ) {
 			$expired += 3600;
 		}
-
 		if ( $expired < time() ) {
 			do_action( 'auth_cookie_expired', $cookie_elements );
 			return false;
 		}
-
-		$user = $this->users->get_user( $username, array( 'by' => 'login' ) );
+		
+		$user = $this->users->get_user( $auth_args['username'], array( 'by' => 'login' ) );
 		if ( !$user || is_wp_error( $user ) ) {
 			do_action( 'auth_cookie_bad_username', $cookie_elements );
 			return $user;
 		}
 
-		$pass_frag = '';
+		$auth_args['pass_frag'] = '';
 		if ( 1 < WP_AUTH_COOKIE_VERSION ) {
-			$pass_frag = substr( $user->user_pass, 8, 4 );
+			$auth_args['pass_frag'] = substr( $user->user_pass, 8, 4 );
 		}
+		
+		$key_string = $auth_args['username'] . '|' . $auth_args['pass_frag'] . '|' . $auth_args['expiration'] . '|' . $auth_args['token'];
+		$key  = call_user_func( backpress_get_option( 'hash_function_name' ), $key_string, $scheme );
 
-		$key  = call_user_func( backpress_get_option( 'hash_function_name' ), $username . $pass_frag . '|' . $expiration, $scheme );
-		$hash = hash_hmac( 'md5', $username . '|' . $expiration, $key );
-	
-		if ( $hmac != $hash ) {
+		$hash_function = function_exists( 'hash' ) ? 'sha256' : 'sha1';;
+		$hash_string = $auth_args['username'] . '|' . $auth_args['expiration'] . '|' . $auth_args['token'];
+		$hash = hash_hmac( $hash_function, $hash_string, $key );
+
+		if ( $auth_args['hmac'] != $hash ) {
 			do_action( 'auth_cookie_bad_hash', $cookie_elements );
 			return false;
 		}
@@ -293,13 +304,6 @@ class WP_Auth
 	 */
 	function clear_auth_cookie()
 	{
-		do_action( 'clear_auth_cookie' );
-		foreach ( $this->cookies as $_scheme => $_scheme_cookies ) {
-			foreach ( $_scheme_cookies as $_cookie ) {
-				backpress_set_cookie( $_cookie['name'], ' ', time() - 31536000, $_cookie['path'], $_cookie['domain'] );
-			}
-			unset( $_cookie );
-		}
-		unset( $_scheme, $_scheme_cookies );
+		return;
 	}
 }

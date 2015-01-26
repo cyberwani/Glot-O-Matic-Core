@@ -256,8 +256,9 @@ gp_set_globals( get_defined_vars() );
 if ( !defined('GP_COOKIE_DOMAIN') )
 	define('GP_COOKIE_DOMAIN', false);
 
-if ( !class_exists( 'WP_Auth' ) ) {
-	require_once( BACKPRESS_PATH . 'class.wp-auth.php' );
+$_auth_class_name = gp_const_get( 'AUTH_CLASS', 'WP_Auth' );
+if ( !class_exists( $_auth_class_name ) ) {
+	require_once( gp_const_get( 'AUTH_CLASS_FILE', BACKPRESS_PATH . 'class.wp-auth.php' ) );
 	$cookies = array();
 	$cookies['auth'][] = array(
 		'domain' => GP_COOKIE_DOMAIN,
@@ -276,9 +277,10 @@ if ( !class_exists( 'WP_Auth' ) ) {
 		'path' => gp_url_path(),
 		'name' => gp_const_get( 'GP_LOGGED_IN_COOKIE', 'glotpress_logged_in' ),
 	);
-	$wp_auth_object = new WP_Auth( $gpdb, $wp_users_object, $cookies );
+	$wp_auth_object = new $_auth_class_name( $gpdb, $wp_users_object, $cookies );
 	unset( $cookies );
 }
+unset( $_auth_class_name );
 
 require_once( GP_PATH . GP_INC . 'warnings.php' );
 require_once( GP_PATH . GP_INC . 'validation.php' );
