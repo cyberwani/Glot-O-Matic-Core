@@ -163,51 +163,40 @@ class WP_Auth_V2
 		}
 
 		$cookie_elements = explode( '|', $cookie );
-		$element_count = count( $cookie_elements );
-
-		if ( $element_count != 4 ) {
-			if ( apply_filters( 'gp_auth_cookie_malformed', false, $element_count ) ) {
-				do_action( 'auth_cookie_malformed', $cookie, $scheme );
-				return false;
-			}
+		if ( count( $cookie_elements ) != 4 ) {
+			do_action( 'auth_cookie_malformed', $cookie, $scheme );
+			return false;
 		}
 
-		$auth_args = array();
-		$auth_args['username'] = $cookie_elements[0];
-		$auth_args['expiration'] = $cookie_elements[1];
-		$auth_args['token'] = $cookie_elements[2];
-		$auth_args['hmac'] = $cookie_elements[3];
+		list( $username, $expiration, $token, $hmac ) = $cookie_elements;
 
-		$expired = $auth_args['expiration'];
+		$expired = $expiration;
 
 		// Allow a grace period for POST and AJAX requests
 		if ( defined( 'DOING_AJAX' ) || 'POST' == $_SERVER['REQUEST_METHOD'] ) {
 			$expired += 3600;
 		}
+
 		if ( $expired < time() ) {
 			do_action( 'auth_cookie_expired', $cookie_elements );
 			return false;
 		}
 		
-		$user = $this->users->get_user( $auth_args['username'], array( 'by' => 'login' ) );
+		$user = $this->users->get_user( $username, array( 'by' => 'login' ) );
 		if ( !$user || is_wp_error( $user ) ) {
 			do_action( 'auth_cookie_bad_username', $cookie_elements );
 			return $user;
 		}
 
-		$auth_args['pass_frag'] = '';
+		$pass_frag = '';
 		if ( 1 < WP_AUTH_COOKIE_VERSION ) {
-			$auth_args['pass_frag'] = substr( $user->user_pass, 8, 4 );
+			$pass_frag = substr( $user->user_pass, 8, 4 );
 		}
 		
-		$key_string = $auth_args['username'] . '|' . $auth_args['pass_frag'] . '|' . $auth_args['expiration'] . '|' . $auth_args['token'];
-		$key  = call_user_func( backpress_get_option( 'hash_function_name' ), $key_string, $scheme );
+		$key  = call_user_func( backpress_get_option( 'hash_function_name' ), $username . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
+		$hash = hash_hmac( function_exists( 'hash' ) ? 'sha256' : 'sha1', $username . '|' . $expiration . '|' . $token, $key );
 
-		$hash_function = function_exists( 'hash' ) ? 'sha256' : 'sha1';;
-		$hash_string = $auth_args['username'] . '|' . $auth_args['expiration'] . '|' . $auth_args['token'];
-		$hash = hash_hmac( $hash_function, $hash_string, $key );
-
-		if ( $auth_args['hmac'] != $hash ) {
+		if ( $hmac != $hash ) {
 			do_action( 'auth_cookie_bad_hash', $cookie_elements );
 			return false;
 		}
