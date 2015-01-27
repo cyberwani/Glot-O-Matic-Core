@@ -18,6 +18,8 @@ class GP_Google_Translate extends GP_Plugin {
 		parent::__construct();
 
 		add_action( 'pre_tmpl_load', array( $this, 'load_script' ), 10, 2 );
+		$this->add_action( 'gp_translation_set_bulk_action' );
+		$this->add_action( 'gp_translation_set_bulk_action_post', array( 'args' => 4 ) );
 	}
 
 	public function load_script( $template, $args ) {
@@ -58,8 +60,6 @@ class GP_Google_Translate extends GP_Plugin {
 
 		$this->add_filter( 'gp_entry_actions' );
 
-		$this->add_action( 'gp_translation_set_bulk_action' );
-		$this->add_action( 'gp_translation_set_bulk_action_post', array( 'args' => 4 ) );
 	}
 
 	public function gp_entry_actions( $actions ) {
@@ -78,6 +78,19 @@ class GP_Google_Translate extends GP_Plugin {
 			return;
 		}
 
+		if (GP::$user->logged_in() && ! $this->key) {
+			$user_obj = GP::$user->current();
+			
+			$user = strtoupper($user_obj->user_login);
+
+			$user_key = gp_const_get('GP_GOOGLE_TRANSLATE_KEY_'.$user);
+			if( $user_key ) { $this->key = $user_key; }
+		}
+
+		if( ! $this->key ) {
+			return;
+		}
+		
 		$google_errors = 0;
 		$insert_errors = 0;
 		$ok      = 0;
