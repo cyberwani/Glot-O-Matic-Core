@@ -19,7 +19,7 @@ class GP_User_Slug_for_Downloads extends GP_Plugin {
 
 	public function filter_download_filename( $filename, $project_path, $translation_set_slug, $export_locale, $format_extension ) {
 		if( $translation_set_slug != '' && $translation_set_slug != 'default' ) {
-			$filename = $translation_set_slug . '.' . $format->extension;
+			$filename = $translation_set_slug . '.' . $format_extension;
 		}
 		
 		return $filename;
