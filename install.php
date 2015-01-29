@@ -12,6 +12,24 @@ require_once( GP_PATH . GP_INC . 'schema.php' );
 $show_htaccess_instructions = false;
 $action = 'upgrade';
 
+/**
+ * Whether the server software is Apache or something else
+ * @global bool $is_apache
+ */
+$is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
+
+/**
+ * Whether the server software is IIS or something else
+ * @global bool $is_IIS
+ */
+$is_IIS = !$is_apache && (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
+
+/**
+ * Whether the server software is IIS 7.X or greater
+ * @global bool $is_iis7
+ */
+$is_iis7 = $is_IIS && intval( substr( $_SERVER['SERVER_SOFTWARE'], strpos( $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/' ) + 14 ) ) >= 7;
+
 if ( gp_get_option( 'gp_db_version' ) <= gp_get_option_from_db( 'gp_db_version' ) && ! isset( $_GET['force'] ) ) {
 	$success_message = __( 'You already have the latest version, no need to upgrade!' );
 }
@@ -20,7 +38,7 @@ else if ( gp_is_installed() ) {
 	$errors = gp_upgrade();
 
 	if( $is_iis7 ) {
-		$show_iis_instructions = ! gp_set_webconfig() && empty( $errors );
+		$show_webconfig_instructions = ! gp_set_webconfig() && empty( $errors );
 	}
 	else {
 		$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
@@ -36,7 +54,7 @@ else if ( defined('CUSTOM_USER_TABLE') ) {
 	}
 
 	if( $is_iis7 ) {
-		$show_iis_instructions = ! gp_set_webconfig() && empty( $errors );
+		$show_webconfig_instructions = ! gp_set_webconfig() && empty( $errors );
 	}
 	else {
 		$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
@@ -77,7 +95,7 @@ else if( isset( $_POST['user_name'], $_POST['user_name'], $_POST['admin_password
 		}
 
 		if( $is_iis7 ) {
-			$show_iis_instructions = ! gp_set_webconfig() && empty( $errors );
+			$show_webconfig_instructions = ! gp_set_webconfig() && empty( $errors );
 		}
 		else {
 			$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
