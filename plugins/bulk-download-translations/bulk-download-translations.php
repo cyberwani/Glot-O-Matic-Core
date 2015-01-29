@@ -30,7 +30,7 @@ class GP_Bulk_Download_Translations extends GP_Plugin {
 	}
 
 	public function gp_project_actions( $actions, $project ) {
-		$actions[] .= gp_link_get( gp_url( 'bulk-export/' . $project->name), __('Bulk Export Translations') );
+		$actions[] .= gp_link_get( gp_url( 'bulk-export/' . $project->slug), __('Bulk Export Translations') );
 		
 		return $actions;
 	}
@@ -39,14 +39,18 @@ class GP_Bulk_Download_Translations extends GP_Plugin {
 	}
 	
 	public function bulk_export( $project_path ) {
+		$project_path = urldecode( $project_path );
+
 		// By default we only download the PO files, but check to see if we've been told to do the MO files as well.
 		$include_mos = false;
 		if( gp_const_get('GP_BULK_DOWNLOAD_TRANSLATIONS_MO') ) { 
 			$include_mos = true;
 		}
-				
+			
+		$temp_dir = gp_const_get('GP_BULK_DOWNLOAD_TRANSLATIONS_TEMP_DIR', sys_get_temp_dir());
+
 		// Get a temporary file, use bdt as the first three letters of it.
-		$temp_dir = tempnam(sys_get_temp_dir(), 'bdt');
+		$temp_dir = tempnam($temp_dir, 'bdt');
 		
 		// Now delete the file and recreate it as a directory.
 		unlink( $temp_dir );
