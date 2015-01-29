@@ -39,14 +39,21 @@ class GP_Bulk_Download_Translations extends GP_Plugin {
 	}
 	
 	public function bulk_export( $project_path ) {
+		// The project path is url encoded, so decode before we do anything with it.
 		$project_path = urldecode( $project_path );
 
-		// By default we only download the PO files, but check to see if we've been told to do the MO files as well.
-		$include_mos = false;
-		if( gp_const_get('GP_BULK_DOWNLOAD_TRANSLATIONS_MO') ) { 
-			$include_mos = true;
+		// Loop through the supported format options and determine which ones we're exporting.
+		$include_formats = array();
+		foreach ( GP::$formats as $slug => $format ) {
+			if( gp_const_get('GP_BULK_DOWNLOAD_TRANSLATIONS_FORMAT_' . strtoupper(str_replace('.', '-', $slug)), false) == true ) {
+				$include_formats[] = $slug;
+			}
 		}
-			
+		
+		// If we didn't have any formats set for export, use PO files by default.
+		if( count( $include_formats ) == 0 ) { $include_formats = array( 'po' ); }
+		
+		// Determine our temporary directory.
 		$temp_dir = gp_const_get('GP_BULK_DOWNLOAD_TRANSLATIONS_TEMP_DIR', sys_get_temp_dir());
 
 		// Get a temporary file, use bdt as the first three letters of it.
@@ -70,14 +77,11 @@ class GP_Bulk_Download_Translations extends GP_Plugin {
 		
 		// Loop through all the sets.
 		foreach( $translation_sets as $set ) {
-			// Export the PO file for this translation set.
-			$files[] .= $this->_export_to_file( 'po', $temp_dir, $project_obj, $locale, $set );
-			
-			// If we're include the MO files, do so now.
-			if( $include_mos ) {
-				$files[] .= $this->_export_to_file( 'mo', $temp_dir, $project_obj, $locale, $set );
+			// Loop through all the formats we're exporting
+			foreach( $include_formats as $format ) {
+				// Export the PO file for this translation set.
+				$files[] .= $this->_export_to_file( $format, $temp_dir, $project_obj, $locale, $set );
 			}
-			
 		}
 		
 		// Setup the zip file name to use, it's the project name + .zip.
@@ -137,17 +141,17 @@ class GP_Bulk_Download_Translations extends GP_Plugin {
 		// Apply any filters that other plugins may have implemented.
 		$export_locale = apply_filters( 'export_locale', $locale->slug, $locale );
 		
+		// Get the format object to create the export with.
+		$format_obj = gp_array_get( GP::$formats, gp_get( 'format', $format ), null );
+
 		// Create the default file name.
-		$filename = sprintf( '%s-%s.'.$format, str_replace( '/', '-', $project->path ), $export_locale );
+		$filename = sprintf( '%s-%s.'.$format_obj->extension, str_replace( '/', '-', $project->path ), $export_locale );
 
 		// Apply any filters that other plugins may have implemented to the filename.
-		$filename = apply_filters( 'export_filename', $filename, $project->path, $set->slug, $export_locale, $format );
-
-		// Get the format object to create the export with.
-		$format = gp_array_get( GP::$formats, gp_get( 'format', $format ), null );
+		$filename = apply_filters( 'export_filename', $filename, $project->path, $set->slug, $export_locale, $format_obj->extension );
 
 		// Get the contents from the formatter.
-		$contents = $format->print_exported_file( $project, $locale, $set, $entries );
+		$contents = $format_obj->print_exported_file( $project, $locale, $set, $entries );
 
 		// Write the contents out to the file.
 		$fh = fopen( $dir . '/' . $filename, 'w' );
