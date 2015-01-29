@@ -24,9 +24,18 @@ else if ( isset( $success_message ) ) {
 // TODO: deny access to scripts folder
 if ( $show_htaccess_instructions ): ?>
 	<p>
-		<?php _e( 'If your <code>.htaccess</code> file were writable, we could do this automatically, but it isn&#8217;t so these are the mod_rewrite rules you should have in your <code>.htaccess</code> file.' ); ?>
+		<?php _e( 'If your <code>.htaccess</code> file was writeable, we could do this automatically, but it isn&#8217;t so these are the mod_rewrite rules you should have in your <code>.htaccess</code> file.' ); ?>
 
 		<pre><?php echo esc_html( gp_mod_rewrite_rules() ); ?></pre>
+	</p>
+<?php endif; ?>
+<?php
+// TODO: deny access to scripts folder
+if ( $show_webconfig_instructions ): ?>
+	<p>
+		<?php _e( 'If your <code>web.config</code> didn&#8217;t exist, we could do this automatically, but it does so these are the IIS rewrite rules you should have in your <code>web.config</code> file.' ); ?>
+
+		<pre><?php echo esc_html( gp_iis_rewrite_rules() ); ?></pre>
 	</p>
 <?php endif; ?>
 

@@ -24,7 +24,7 @@ function gp_upgrade() {
 }
 
 /**
- * Sets the rewrite rules
+ * Sets the mod_rewrite rules
  *
  * @return bool Returns true on success and false on failure
  */
@@ -57,7 +57,33 @@ function gp_set_htaccess() {
 }
 
 /**
- * Return the rewrite rules
+ * Sets the IIS rewrite rules
+ *
+ * @return bool Returns true on success and false on failure
+ */
+function gp_set_webconfig() {
+	if ( file_exists( 'web.config' ) ) {
+		return false;
+	}
+
+	// Try and create the web.config file.
+	$webconfig_file = @fopen( 'web.config', 'w' );
+
+	// error opening htaccess, inform user!
+	if ( false === $webconfig_file ) {
+		return false;
+	}
+
+	// Write the rules out to the web.config file
+	fwrite( $webconfig_file, gp_mod_rewrite_rules() );
+
+	fclose( $webconfig_file );
+
+	return true;
+}
+
+/**
+ * Return the mod_rewrite rewrite rules
  *
  * @return string Rewrite rules
  */
@@ -76,6 +102,33 @@ function gp_mod_rewrite_rules() {
 # END GlotPress';
 }
 
+/**
+ * Return the IIS rewrite rules
+ *
+ * @return string Rewrite rules
+ */
+function gp_iis_rewrite_rules() {
+	$path = gp_add_slash( gp_url_path( guess_uri() ) );
+
+	return '
+<configuration>
+    <system.webServer>
+		<rewrite>
+		  <rules>
+			<rule name="GlotPress Rewrite Rule" stopProcessing="true">
+			  <match url="." ignoreCase="false" />
+			  <conditions>
+				<!--# BEGIN GlotPress-->
+				<add input="{REQUEST_FILENAME}" matchType="IsFile" ignoreCase="false" negate="true" />
+				<add input="{REQUEST_FILENAME}" matchType="IsDirectory" ignoreCase="false" negate="true" />
+			  </conditions>
+			  <action type="Rewrite" url="' . $path . 'index.php" />
+			</rule>
+		  </rules>
+		</rewrite>
+    </system.webServer>
+</configuration>';
+}
 
 
 function gp_upgrade_data( $db_version ) {

@@ -19,7 +19,12 @@ else if ( gp_is_installed() ) {
 	$success_message = __( 'GlotPress was successully upgraded!' );
 	$errors = gp_upgrade();
 
-	$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
+	if( $is_iis7 ) {
+		$show_iis_instructions = ! gp_set_webconfig() && empty( $errors );
+	}
+	else {
+		$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
+	}
 }
 else if ( defined('CUSTOM_USER_TABLE') ) {
 	$errors = gp_install();
@@ -30,7 +35,13 @@ else if ( defined('CUSTOM_USER_TABLE') ) {
 		gp_create_initial_contents();
 	}
 
-	$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
+	if( $is_iis7 ) {
+		$show_iis_instructions = ! gp_set_webconfig() && empty( $errors );
+	}
+	else {
+		$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
+	}
+
 	$action = 'installed';
 }
 else if( isset( $_POST['user_name'], $_POST['user_name'], $_POST['admin_password'], $_POST['admin_password2'], $_POST['admin_email'] ) ) {
@@ -65,7 +76,13 @@ else if( isset( $_POST['user_name'], $_POST['user_name'], $_POST['admin_password
 			gp_create_initial_contents( $user_name, $admin_password, $admin_email );
 		}
 
-		$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
+		if( $is_iis7 ) {
+			$show_iis_instructions = ! gp_set_webconfig() && empty( $errors );
+		}
+		else {
+			$show_htaccess_instructions = ! gp_set_htaccess() && empty( $errors );
+		}
+
 		$action = 'installed';
 	} else {
 		$action = 'install';
