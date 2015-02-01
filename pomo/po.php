@@ -2,7 +2,7 @@
 /**
  * Class for working with PO files
  *
- * @version $Id: po.php 1014 2015-01-23 12:49:27Z ocean90 $
+ * @version $Id: po.php 1016 2015-02-01 23:10:58Z ocean90 $
  * @package pomo
  * @subpackage po
  */
@@ -218,6 +218,10 @@ class PO extends Gettext_Translations {
 	}
 
 	public static function match_begin_and_end_newlines( $translation, $original ) {
+		if ( '' === $translation ) {
+			return $translation;
+		}
+
 		$original_begin = "\n" === substr( $original, 0, 1 );
 		$original_end = "\n" === substr( $original, -1 );
 		$translation_begin = "\n" === substr( $translation, 0, 1 );
