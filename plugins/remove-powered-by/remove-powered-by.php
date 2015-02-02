@@ -15,11 +15,11 @@ class GP_Remove_Powered_By extends GP_Plugin {
 
 		parent::__construct();
 
-		add_action( 'pre_tmpl_load', array( $this, 'load_script' ), 10, 2 );
-		add_action( 'gp_footer', array( $this, 'do_footer' ), 1, 0 );
+		$this->add_action( 'pre_tmpl_load', array( 'args' => 2 ) );
+		$this->add_action( 'gp_footer', array( 'args' => 0, 'priority' => 1 ) );
 	}
 
-	public function load_script( $template, $args ) {
+	public function pre_tmpl_load( $template, $args ) {
 
 		$url = gp_url_public_root();
 
@@ -31,7 +31,7 @@ class GP_Remove_Powered_By extends GP_Plugin {
 
 	}
 
-	public function do_footer() {
+	public function gp_footer() {
 		echo '<span style="display: none;">--GP_RPB_MARKER--</span>&nbsp;';
 	}
 }

@@ -14,11 +14,11 @@ class GP_Remove_Projects_From_Breadcrums extends GP_Plugin {
 	
 		parent::__construct();
 
-		add_filter( 'gp_pre_breadcrumb', array( $this, 'remove_projects_from_breadcrums' ), 10, 1 );
-		add_filter( 'gp_logo_url', array( $this, 'remove_projects_from_logo_url' ), 10, 1 );
+		$this->add_action( 'gp_pre_breadcrumb', array( 'args' => 1 ) );
+		$this->add_action( 'gp_logo_url', array( 'args' => 1 ) );
 	}
 
-	public function remove_projects_from_breadcrums( $breadcrums ) {
+	public function gp_pre_breadcrumb( $breadcrums ) {
 		
 		if( is_array( $breadcrums ) ) { 
 			if( is_array( $breadcrums[0] ) ) {
@@ -33,7 +33,7 @@ class GP_Remove_Projects_From_Breadcrums extends GP_Plugin {
 		return $breadcrums;
 	}
 	
-	public function remove_projects_from_logo_url( $url ) {
+	public function gp_logo_url( $url ) {
 		
 		if( gp_const_get('GP_REMOVE_PROJECTS_FROM_BREADCRUMS_LOGO_URL') ) { 
 			$url = $url . GP_REMOVE_PROJECTS_FROM_BREADCRUMS_LOGO_URL;

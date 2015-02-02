@@ -15,10 +15,10 @@ class GP_New_Window_for_External_Links extends GP_Plugin {
 
 		parent::__construct();
 
-		add_action( 'pre_tmpl_load', array( $this, 'load_script' ), 10, 2 );
+		$this->add_action( 'pre_tmpl_load', array( 'args' => 2 ) );
 	}
 
-	public function load_script( $template, $args ) {
+	public function pre_tmpl_load( $template, $args ) {
 
 		$url = gp_url_public_root();
 

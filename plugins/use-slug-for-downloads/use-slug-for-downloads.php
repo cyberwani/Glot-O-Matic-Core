@@ -14,10 +14,10 @@ class GP_User_Slug_for_Downloads extends GP_Plugin {
 	
 		parent::__construct();
 
-		add_filter( 'export_filename', array( $this, 'filter_download_filename' ), 10, 5 );
+		$this->add_action( 'export_filename', array( 'args' => 5 ) );
 	}
 
-	public function filter_download_filename( $filename, $project_path, $translation_set_slug, $export_locale, $format_extension ) {
+	public function export_filename( $filename, $project_path, $translation_set_slug, $export_locale, $format_extension ) {
 		if( $translation_set_slug != '' && $translation_set_slug != 'default' ) {
 			$filename = $translation_set_slug . '.' . $format_extension;
 		}
