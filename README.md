@@ -1,5 +1,13 @@
 This is a fork of GlotPress, focusing on integration with a WordPress install.
 
+Glot-O-Matic Core also includes several fixes to GlotPress:
+
+	- BackPress is included in the distro, so a single download will get you everything you need to install.
+	- Custom BackPress patch to resolve error when the installation routine creates the database tables.
+	- Support for IIS installs.
+	- Additional filters/actions to support the new plugins.
+	- A transparent logo file so you can customize your install better.
+
 There are seven new plugins included in this version:
 
 	- remove-projects-from-breadcrums
