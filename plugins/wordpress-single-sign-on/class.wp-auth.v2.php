@@ -121,9 +121,12 @@ class WP_Auth_V2
 			return $this->current;
 		}
 
+		$scheme = 'logged_in';
+		if( is_ssl() ) { $scheme = 'secure_auth'; }
+		
 		if ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) {
 			$this->set_current_user( 0 );
-		} elseif ( $user_id = $this->validate_auth_cookie( null, 'logged_in' ) ) {
+		} elseif ( $user_id = $this->validate_auth_cookie( null, $scheme ) ) {
 			$this->set_current_user( $user_id );
 		} else {
 			$this->set_current_user( 0 );
