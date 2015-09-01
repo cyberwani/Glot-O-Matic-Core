@@ -186,3 +186,15 @@ $gp_table_prefix = 'gp_';
  * For more options, see the readme in plugins/single-click-edit/readme.txt
  */
 //define( 'GP_SINGLE_CLICK_EDIT', true );
+
+/**
+ * Last Update Plugin
+ * 
+ * Last Update is a plugin for GlotPress that will display the last update time for translation
+ * sets.
+ * 
+ * For more options, see the readme in plugins/single-click-edit/readme.txt
+ */
+//define( 'GP_LAST_UPDATE', true );							// Enable the plugin.
+//define( 'GP_LAST_UPDATE_FORMAT', 'M j Y @ g:i a' );			// See PHP's date() function for format, default: 'M j Y @ g:i a'
+//define( 'GP_LAST_UPDATE_REQUIRED_PERMISSION', 'approve' );	// Permissions: read, approve, admin
