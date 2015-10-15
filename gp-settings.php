@@ -154,6 +154,29 @@ add_action( 'init', 'gp_rewrite_rules' );
 
 
 /**
+ * Add the GlotPress header function to the WordPress header hook
+ *
+ * @since    0.1
+ */
+add_action('wp_head', 'gp_head');
+
+/**
+ * Add the GlotPress footer function to the WordPress footer hook
+ *
+ * @since    0.1
+ */
+add_action('wp_head', 'gp_footer');
+
+
+/**
+ * Add the GlotPress page title to the WordPress title hook
+ *
+ * @since    0.1
+ */
+add_filter( 'wp_title', 'gp_title', 10, 2 );
+
+
+/**
  * Query vars for GP rewrite rules
  *
  * @since    0.1

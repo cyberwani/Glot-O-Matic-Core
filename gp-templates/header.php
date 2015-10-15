@@ -1,16 +1,10 @@
 <?php
 gp_enqueue_style( 'base' );
 gp_enqueue_script( 'jquery' );
+
+include( get_template_directory() . '/header.php' );
+
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title><?php echo gp_title(); ?></title>
-		<?php gp_head(); ?>
-	</head>
-	<body <?php body_class(); ?>>
 	<script type="text/javascript">document.body.className = document.body.className.replace('no-js','js');</script>
 		<div class="gp-content">
 	    <div id="gp-js-message"></div>
